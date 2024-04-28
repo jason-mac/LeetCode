@@ -1,3 +1,4 @@
+// accepted solution
 class Solution {
 public:
   void rec(TreeNode *root, int previousMax, int &count) {
