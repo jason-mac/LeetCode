@@ -1,69 +1,63 @@
+/*Given two strings s1 and s2, return true if s2 contains a permutation of s1,
+ *or false otherwise. In other words, return true if one of s1's permutations is
+ *the substring of s2.
+ * */
 // accepted solution
 class Solution {
 public:
-  bool checkString(string str1, string str2) {
-    // Get lengths of both strings
-    int n1 = str1.length();
-    int n2 = str2.length();
+  // map function
 
-    // If length of both strings is not same,
-    // then they cannot be Permutation
-    if (n1 != n2)
-      return false;
-
-    // Sort both strings
-    sort(str1.begin(), str1.end());
-    sort(str2.begin(), str2.end());
-
-    // Compare sorted strings
-    for (int i = 0; i < n1; i++)
-      if (str1[i] != str2[i])
-        return false;
-
-    return true;
-  }
-  int hashString(string s) {
-    int sum = 0;
-    for (int i = 0; i < s.size(); i++) {
-      sum += int(s[i]);
+  bool isAnagram(string s1, string s2) {
+    std::unordered_map<char, int> count;
+    for (auto x : s1) {
+      count[x]++;
     }
-    return sum;
+    for (auto x : s2) {
+      count[x]--;
+    }
+    for (auto x : count) {
+      if (x.second != 0) {
+        return false;
+      }
+    }
+    return true;
   }
   string getSubstring(string s, int left, int right) {
     string substring = "";
-    while (left < right) {
-      substring.push_back(s[left]);
+    while (left != right) {
+      substring += s[left];
       left++;
     }
     return substring;
   }
   bool checkInclusion(string s1, string s2) {
-    if (s1.size() > s2.size())
+    if (s2.size() < s1.size())
       return false;
-    int s1Hash = hashString(s1);
+    int s1Hash = 0;
     int s2CurrentHash = 0;
     int left = 0;
     int right = 0;
     while (right != s1.size()) {
+      s1Hash += int(s1[right]);
+      s2CurrentHash += int(s2[right]);
+      right++;
+    }
+    while (right < s2.size()) {
+      if (s1Hash == s2CurrentHash) {
+        if (isAnagram(s1, getSubstring(s2, left, right))) {
+          return true;
+        }
+      }
+      s2CurrentHash -= int(s2[left]);
+      left++;
       s2CurrentHash += int(s2[right]);
       right++;
     }
     if (s1Hash == s2CurrentHash) {
-      if (checkString(s1, getSubstring(s2, left, right))) {
+      if (isAnagram(s1, getSubstring(s2, left, right))) {
         return true;
-      }
-    }
-    while (right < s2.size()) {
-      s2CurrentHash -= int(s2[left]);
-      left++;
-      right++;
-      s2CurrentHash += int(s2[right - 1]);
-      if (s1Hash == s2CurrentHash) {
-        if (checkString(s1, getSubstring(s2, left, right))) {
-          return true;
-        }
       }
     }
     return false;
   }
-}
+};
