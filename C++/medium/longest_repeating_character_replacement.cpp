@@ -1,43 +1,30 @@
 class Solution {
 public:
   int characterReplacement(string s, int k) {
-    int res = 1 + k;
-    if (s.length() == 1)
-      return 1;
+    int result = 0;
     int left = 0;
-    int count = 0;
-    int right = 1;
-    char checker;
-    while (left != s.length() - k) {
-      count = 0;
-      checker = s[left];
-      while (count != k && right != s.length()) {
-        if (s[right] != checker)
-          count++;
-        right++;
-      }
-      while (s[right] == checker && right != s.length())
-        right++;
-      res = max(res, right - left);
-      left++;
-      right = left + 1;
+    int right = 0;
+    int windowLength = 0;
+    pair<int, int> mostFrequent = {0, 0};
+    std::unordered_map<int, int> count;
+    for (int i = 0; i < 26; i++) {
+      count[int('A') + 1] = 0;
     }
-    left = s.length() - 1;
-    right = s.length() - 2;
-    while (left != k) {
-      count = 0;
-      checker = s[left];
-      while (count != k && right != -1) {
-        if (s[right] != checker)
-          count++;
-        right--;
+    while (right < s.size()) {
+      int rightCharacter = int(s[right]);
+      windowLength = right - left + 1;
+      count[rightCharacter] += 1;
+      if (count[rightCharacter] > mostFrequent.second) {
+        mostFrequent = pair<int, int>(rightCharacter, count[rightCharacter]);
       }
-      while (s[right] == checker && right - 1)
-        right--;
-      res = max(res, left - right);
-      left--;
-      right = left - 1;
+      if (windowLength - count[mostFrequent.first] <= k) {
+        result = max(result, windowLength);
+      } else {
+        count[int(s[left])] -= 1;
+        left++;
+      }
+      right++;
     }
-    return res;
+    return result;
   }
 };
